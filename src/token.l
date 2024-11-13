@@ -41,7 +41,7 @@ typedef struct xnumber xnumber;
 #else
 #include "mymalloc.h"
 
-YYSTYPE liberty_parser_lval;
+extern YYSTYPE liberty_parser_lval;
 
 char *my_strdup(char *str);
 

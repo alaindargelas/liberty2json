@@ -28,7 +28,7 @@
 #endif
 #include "mymalloc.h"
 
-YYSTYPE syntax_parser_lval;
+extern YYSTYPE syntax_parser_lval;
 
 int syntax_parser_lex(void);
 int synt_lineno = 1;

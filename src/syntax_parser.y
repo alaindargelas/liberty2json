@@ -43,7 +43,7 @@ static int gsindex = 0;
  liberty_hash_table *libsynt_allgroups;
  liberty_hash_table *libsynt_attrs;
 
- libsynt_technology libsynt_techs[2];
+ libsynt_technology syntax_libsynt_techs[2];
  int libsynt_tech_count = 0;
  
 void push_group(libsynt_head *h);
@@ -98,7 +98,7 @@ libsynt_attribute_info *make_simple(char *name, libsynt_attr_type type, void *co
 
 %%
 
-file	: group { libsynt_techs[libsynt_tech_count++].lib = $1; }
+file	: group { syntax_libsynt_techs[libsynt_tech_count++].lib = $1; }
 		;
 
 group	: head LCURLY {push_group($1);} statements RCURLY {$$ = gs[gsindex-1];pop_group();}
