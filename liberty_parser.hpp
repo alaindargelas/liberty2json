@@ -34,7 +34,7 @@ class LibertyParser {
 		}
 		void to_json_file(std::string filename) {
 			std::ofstream file(filename);
-			file << as_json().dump(2);
+			file << as_json().dump();
 			file.close();
 		}
 	private:
