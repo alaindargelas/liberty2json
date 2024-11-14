@@ -44,3 +44,6 @@ src/syntax_parser.c
 src/syntax_parser.h
 src/synttok.c
 src/token.c
+
+# Test files
+*.test.json

@@ -1,0 +1,1 @@
+{"library":{"defines":["sii","siiattrib"],"delay_model":"table_lookup","groups":[{"cell":{"groups":[{"pin":{"capacitance":0.3,"direction":"input","fall_capacitance":0.2,"groups":[{"sii":{"names":["9"],"siiattrib":"1"}}],"names":["A"],"rise_capacitance":0.1}}],"names":["siiCell"]}}],"names":["q"]}}
