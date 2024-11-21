@@ -44,7 +44,7 @@ class LibertyParser {
 			// Group names
 			si2drNamesIdT gnames = si2drGroupGetNames(group, &err);
 			si2drStringT gname;
-			while (gname=si2drIterNextName(gnames, &err)) {
+			while ((gname=si2drIterNextName(gnames, &err))) {
 				j["names"].push_back(gname);
 			}
 			si2drIterQuit(gnames, &err);
