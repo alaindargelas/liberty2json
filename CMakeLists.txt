@@ -37,3 +37,9 @@ set(FLEX_BISON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/liberty_parser.c ${CMAKE_
 
 add_executable(liberty2json ${CMAKE_CURRENT_SOURCE_DIR}/liberty2json.cpp ${LIB_SOURCES} ${LIB_HEADERS} ${FLEX_BISON_SOURCES})
 target_include_directories(liberty2json PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+###############################################################################
+# Executable target for syntform
+###############################################################################
+add_executable(syntform ${CMAKE_CURRENT_SOURCE_DIR}/src/syntform.c ${LIB_SOURCES} ${LIB_HEADERS} ${FLEX_BISON_SOURCES})
+target_include_directories(syntform PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
