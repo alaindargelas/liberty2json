@@ -8,6 +8,13 @@ set(CMAKE_BUILD_TYPE RELEASE)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set(CMAKE_CXX_FLAGS_DEBUG
+"${CMAKE_CXX_FLAGS_DEBUG} -Wall -g"
+)
+set(CMAKE_CXX_FLAGS_RELEASE
+"${CMAKE_CXX_FLAGS_RELEASE} -Wall -O3 -g"
+)
+
 ###############################################################################
 # Fetch files
 ###############################################################################
@@ -32,11 +39,18 @@ add_flex_bison_dependency(synttok syntax_parser)
 set(FLEX_BISON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/liberty_parser.c ${CMAKE_CURRENT_SOURCE_DIR}/src/syntax_parser.c ${CMAKE_CURRENT_SOURCE_DIR}/src/synttok.c ${CMAKE_CURRENT_SOURCE_DIR}/src/token.c)
 
 ###############################################################################
+# Subsystem
+###############################################################################
+
+add_subdirectory(third_party/backward-cpp)
+
+###############################################################################
 # Executable target for Liberty2JSON
 ###############################################################################
 
-add_executable(liberty2json ${CMAKE_CURRENT_SOURCE_DIR}/liberty2json.cpp ${LIB_SOURCES} ${LIB_HEADERS} ${FLEX_BISON_SOURCES})
+add_executable(liberty2json ${CMAKE_CURRENT_SOURCE_DIR}/liberty2json.cpp ${PROJECT_SOURCE_DIR}/third_party/backward-cpp/backward.cpp ${LIB_SOURCES} ${LIB_HEADERS} ${FLEX_BISON_SOURCES})
 target_include_directories(liberty2json PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(liberty2json PUBLIC Backward::Interface)
 
 ###############################################################################
 # Executable target for syntform

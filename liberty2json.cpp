@@ -1,9 +1,11 @@
 #include <iostream>
 #include "liberty_parser.hpp"
+#include "backward.hpp"
 
 // Main method
 int main(int argc, char *argv[]) {
 	LibertyParser *parser;
+	backward::SignalHandling sh;
 	switch (argc) {
 		case 2: // dump to stdout
 			try {
