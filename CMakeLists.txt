@@ -48,7 +48,9 @@ add_subdirectory(third_party/backward-cpp)
 # Executable target for Liberty2JSON
 ###############################################################################
 
-add_executable(liberty2json ${CMAKE_CURRENT_SOURCE_DIR}/liberty2json.cpp ${PROJECT_SOURCE_DIR}/third_party/backward-cpp/backward.cpp ${LIB_SOURCES} ${LIB_HEADERS} ${FLEX_BISON_SOURCES})
+add_executable(liberty2json ${CMAKE_CURRENT_SOURCE_DIR}/liberty2json.cpp 
+                            ${PROJECT_SOURCE_DIR}/third_party/backward-cpp/backward.cpp 
+                            ${LIB_SOURCES} ${LIB_HEADERS} ${FLEX_BISON_SOURCES})
 target_include_directories(liberty2json PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(liberty2json PUBLIC Backward::Interface)
 
