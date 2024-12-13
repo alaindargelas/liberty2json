@@ -6,7 +6,7 @@ using json = nlohmann::json;
 #ifndef LIBERTY_PARSER
 #define LIBERTY_PARSER
 
-// Virtual Liberty Parser 
+// Liberty Parser Interface class 
 class LibertyParser {
 	public:
 		virtual ~LibertyParser() {}; 
