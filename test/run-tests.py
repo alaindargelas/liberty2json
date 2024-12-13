@@ -50,4 +50,5 @@ def run_tests():
 				print(f"File not found: check {json_file} or {ref_file}")
 
 if __name__ == "__main__":
+	# create_reference_files()
 	run_tests()

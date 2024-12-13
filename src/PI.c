@@ -146,7 +146,7 @@ static char *vt_string(si2drValueTypeT vt)
       case SI2DR_UNDEFINED_VALUETYPE:return "SI2DR_UNDEFINED_VALUETYPE";
       case SI2DR_INT32:return "SI2DR_INT32";
       case SI2DR_STRING:return "SI2DR_STRING";
-      case SI2DR_FLOAT64:return "SI2DR_FLOAT32";
+      case SI2DR_FLOAT64:return "SI2DR_FLOAT64";
       case SI2DR_BOOLEAN:return "SI2DR_BOOLEAN";
       case SI2DR_MAX_VALUETYPE:return "SI2DR_MAX_VALUETYPE";
       default:

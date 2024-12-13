@@ -65,6 +65,7 @@ class LibertyParser {
 		}
 	private:
 		si2drErrorT err;
+
 		json _group2json(si2drGroupIdT group) {
 			json j;
 			// Group names
@@ -89,7 +90,11 @@ class LibertyParser {
 			si2drDefinesIdT defines = si2drGroupGetDefines(group, &err);
 			si2drDefineIdT define;
 			while (!si2drObjectIsNull((define=si2drIterNextDefine(defines, &err)), &err)) {
-				j["defines"].push_back(si2drDefineGetName(define, &err));
+				si2drStringT name, allowed_group_name;
+				si2drValueTypeT valtype;
+				si2drDefineGetInfo(define, &name, &allowed_group_name, &valtype, &err);
+				j["defines"][name]["allowed_group_name"] = allowed_group_name;
+				j["defines"][name]["valtype"] = _vt2str(valtype);
 			}
 			si2drIterQuit(defines, &err);
 			// Group groups
@@ -164,6 +169,26 @@ class LibertyParser {
 					default:
 						throw std::invalid_argument("Invalid complex attr value type");
 				}
+			}
+		}
+		string _vt2str(si2drValueTypeT vt) {
+			switch (vt) {
+				case SI2DR_INT32:
+					return "int32";
+				case SI2DR_FLOAT64:
+					return "float64";
+				case SI2DR_STRING:
+					return "string";
+				case SI2DR_BOOLEAN:
+					return "boolean";
+				case SI2DR_EXPR:
+					return "expr";
+				case SI2DR_MAX_VALUETYPE:
+					return "max_valuetype";
+				case SI2DR_UNDEFINED_VALUETYPE:
+					return "undefined_valuetype";
+				default:
+					return "unknown_valuetype";
 			}
 		}
 };
