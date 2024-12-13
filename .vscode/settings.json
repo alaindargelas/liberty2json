@@ -63,7 +63,9 @@
     "vector": "cpp",
     "algorithm": "cpp",
     "condition_variable": "cpp",
-    "fstream": "cpp"
+    "fstream": "cpp",
+    "list": "cpp",
+    "set": "cpp"
   },
   "editor.tabSize": 2,
   "editor.insertSpaces": false
