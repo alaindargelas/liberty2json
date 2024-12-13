@@ -5,6 +5,15 @@ import filecmp
 TEST_DIR = "."
 LIBERTY2JSON_EXE = "../build/liberty2json"
 
+def check_liberty_json(json_filename):
+  """Load a Liberty JSON file"""
+  with open(json_filename, encoding="utf-8") as json_file:
+    json_contents = json_file.read()
+    if '"cell_rise":' in json_contents or '"cell_fall":' in json_contents:
+      print("  NLDM timing found in file:", json_filename)
+    if '"output_current_rise":' in json_contents or '"output_current_fall":' in json_contents:
+      print("  CCS timing found in file:", json_filename)
+
 def create_reference_files():
 	for file_name in os.listdir(TEST_DIR):
 		if file_name.endswith(".lib"):
@@ -32,6 +41,7 @@ def run_tests():
 			if "syntaxerr" in json_file or "example.include" in json_file:
 				continue
 			try:
+				check_liberty_json(json_file)
 				if filecmp.cmp(json_file, ref_file, shallow=False):
 					print(f"Test passed for {file_name}")
 				else:
