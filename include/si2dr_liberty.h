@@ -568,6 +568,9 @@ si2drExprT   *si2drOpExprGetRightExpr SI2_ARGS(( si2drExprT  *expr,
     si2drVoidT       si2drCheckLibertyLibrary     SI2_ARGS(( si2drGroupIdT group,
 															 si2drErrorT  *err));
 	
+	si2drVoidT si2drPISetIgnoreComplexAttrs();
+	si2drVoidT si2drPIUnSetIgnoreComplexAttrs();
+	si2drBooleanT si2drPIGetIgnoreComplexAttrs();
 
 	si2drBooleanT  si2drPIGetTraceMode       SI2_ARGS((si2drErrorT  *err));
 	
@@ -629,8 +632,6 @@ LONG_DOUBLE liberty_get_element(struct liberty_value_data *vd, ...);  /* returns
 void liberty_destroy_value_data(struct liberty_value_data *vd);
 
 struct liberty_value_data *liberty_get_values_data( si2drGroupIdT table_group);
-
-
 	
 #ifdef __cplusplus
 }

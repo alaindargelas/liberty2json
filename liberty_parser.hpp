@@ -2,16 +2,31 @@
 #include <string>
 #include "include/si2dr_liberty.h"
 #include "lib/json.hpp"
+using string = std::string;
 using json = nlohmann::json;
 
 // C++ wrapper for Synopsys Liberty parser
 class LibertyParser {
 	public:
-		LibertyParser(std::string filename) {
+		LibertyParser(string filename, bool debug=false) {
+			set_debug_mode(debug);
 			si2drPIInit(&err); 
 			si2drReadLibertyFile(strdup(filename.c_str()), &err);
+			if (err == SI2DR_SYNTAX_ERROR) {
+				throw std::invalid_argument(get_error_text());
+			}
 		}
 		~LibertyParser() { si2drPIQuit(&err); }
+		bool get_debug_mode() {
+			return si2drPIGetTraceMode(&err);
+		}
+		void set_debug_mode(bool enabled) {
+			if (enabled) {
+				si2drPISetDebugMode(&err);
+			} else {
+				si2drPIUnSetDebugMode(&err);
+			}
+		}
 		int check() {
 			si2drGroupsIdT groups = si2drPIGetGroups(&err);
 			si2drGroupIdT group;
@@ -22,7 +37,7 @@ class LibertyParser {
 			si2drIterQuit(groups, &err);
 			return err;
 		}
-		std::string get_error_text() {
+		string get_error_text() {
 			return si2drPIGetErrorText(err, &err);
 		}
 		json as_json() {
@@ -32,10 +47,21 @@ class LibertyParser {
 			si2drIterQuit(groups, &err);
 			return result;
 		}
-		void to_json_file(std::string filename) {
+		void to_json_file(string filename) {
 			std::ofstream file(filename);
 			file << as_json().dump();
 			file.close();
+		}
+	
+		static bool get_ignore_complex_attrs() {
+			return si2drPIGetIgnoreComplexAttrs();
+		}
+		static void set_ignore_complex_attrs(bool enabled) {
+			if (enabled) {
+				si2drPISetIgnoreComplexAttrs();
+			} else {
+				si2drPIUnSetIgnoreComplexAttrs();
+			}
 		}
 	private:
 		si2drErrorT err;
@@ -79,59 +105,65 @@ class LibertyParser {
 			return jfinal;
 		}
 		json _simpleattr2json(si2drAttrIdT attr) {
-		json j;
-		si2drValueTypeT type = si2drSimpleAttrGetValueType(attr, &err);
-		switch (type) {
-			case SI2DR_INT32:
-				j = si2drSimpleAttrGetInt32Value(attr, &err);
-				break;
-			case SI2DR_FLOAT64:
-				j = si2drSimpleAttrGetFloat64Value(attr, &err);
-				break;
-			case SI2DR_STRING:
-				j = si2drSimpleAttrGetStringValue(attr, &err);
-				break;
-			case SI2DR_BOOLEAN:
-				j = si2drSimpleAttrGetBooleanValue(attr, &err);
-				break;
-			default:
-				j = "Unsupported type";
-		}
-		return j;
-	}
-		json _complexattr2json(si2drAttrIdT attr) {
-		json j;
-		si2drValuesIdT values = si2drComplexAttrGetValues(attr, &err);
-		si2drValueTypeT type;
-		si2drInt32T intgr;
-		si2drFloat64T float64;
-		si2drStringT string;
-		si2drBooleanT boolval;
-		si2drExprT *expr;
-		while (true) {
-			si2drIterNextComplexValue(values, &type, &intgr, &float64, &string, &boolval, &expr, &err);
+			json j;
+			si2drValueTypeT type = si2drSimpleAttrGetValueType(attr, &err);
 			switch (type) {
 				case SI2DR_INT32:
-					j.push_back(intgr);
+					j = si2drSimpleAttrGetInt32Value(attr, &err);
 					break;
 				case SI2DR_FLOAT64:
-					j.push_back(float64);
+					j = si2drSimpleAttrGetFloat64Value(attr, &err);
 					break;
 				case SI2DR_STRING:
-					j.push_back(string);
+					j = si2drSimpleAttrGetStringValue(attr, &err);
 					break;
 				case SI2DR_BOOLEAN:
-					j.push_back(boolval);
+					j = si2drSimpleAttrGetBooleanValue(attr, &err);
 					break;
 				case SI2DR_EXPR:
-					j.push_back("Expression");
+					j = si2drExprToString(si2drSimpleAttrGetExprValue(attr, &err), &err);
 					break;
+				case SI2DR_MAX_VALUETYPE:
 				case SI2DR_UNDEFINED_VALUETYPE:
-					si2drIterQuit(values, &err);
-					return j;
 				default:
-					throw std::invalid_argument("invalid complex value type");
+					throw std::invalid_argument("Invalid simple attr value type");
+			}
+			return j;
+		}
+		json _complexattr2json(si2drAttrIdT attr) {
+			json j;
+			si2drValuesIdT values = si2drComplexAttrGetValues(attr, &err);
+			si2drValueTypeT type;
+			si2drInt32T intgr;
+			si2drFloat64T float64;
+			si2drStringT string;
+			si2drBooleanT boolval;
+			si2drExprT *expr;
+			while (true) {
+				si2drIterNextComplexValue(values, &type, &intgr, &float64, &string, &boolval, &expr, &err);
+				switch (type) {
+					case SI2DR_INT32:
+						j.push_back(intgr);
+						break;
+					case SI2DR_FLOAT64:
+						j.push_back(float64);
+						break;
+					case SI2DR_STRING:
+						j.push_back(string);
+						break;
+					case SI2DR_BOOLEAN:
+						j.push_back(boolval);
+						break;
+					case SI2DR_EXPR:
+						j.push_back(si2drExprToString(expr, &err));
+						break;
+					case SI2DR_MAX_VALUETYPE:
+					case SI2DR_UNDEFINED_VALUETYPE:
+						si2drIterQuit(values, &err);
+						return j;
+					default:
+						throw std::invalid_argument("Invalid complex attr value type");
+				}
 			}
 		}
-	}
 };
