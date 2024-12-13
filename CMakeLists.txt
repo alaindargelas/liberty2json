@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(Liberty2JSON C CXX)
 set(CMAKE_BUILD_TYPE RELEASE)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(CMAKE_CXX_FLAGS_DEBUG
@@ -51,7 +51,8 @@ add_subdirectory(third_party/backward-cpp)
 add_executable(liberty2json ${CMAKE_CURRENT_SOURCE_DIR}/liberty2json.cpp 
                             ${PROJECT_SOURCE_DIR}/third_party/backward-cpp/backward.cpp 
                             ${LIB_SOURCES} ${LIB_HEADERS} ${FLEX_BISON_SOURCES})
-target_include_directories(liberty2json PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(liberty2json PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+                                               ${PROJECT_SOURCE_DIR}/third_party)  
 target_link_libraries(liberty2json PUBLIC Backward::Interface)
 
 ###############################################################################
