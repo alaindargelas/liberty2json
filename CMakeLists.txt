@@ -38,6 +38,49 @@ add_flex_bison_dependency(token liberty_parser)
 add_flex_bison_dependency(synttok syntax_parser)
 set(FLEX_BISON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/liberty_parser.c ${CMAKE_CURRENT_SOURCE_DIR}/src/syntax_parser.c ${CMAKE_CURRENT_SOURCE_DIR}/src/synttok.c ${CMAKE_CURRENT_SOURCE_DIR}/src/token.c)
 
+
+###############################################################################
+# Build Verific
+###############################################################################
+
+add_custom_target(BuildVerificLiberty DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/synlib-linux.a)
+add_custom_command(
+  OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/synlib-linux.a
+  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/synlib_file.h
+  COMMAND echo "       Build Verific Liberty parser library"
+  COMMAND make CFLAGS="-DVERIFIC_ENABLE_ZLIB=1"
+  COMMAND echo "       Verific Liberty parser library"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/")
+
+add_custom_target(BuildVerificDatabase DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/database/database-linux.a)
+add_custom_command(
+    OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/database/database-linux.a
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/database/DataBase.h
+    COMMAND echo "       Build Verific database library"
+    COMMAND make CFLAGS="-DVERIFIC_ENABLE_ZLIB=1"
+    COMMAND echo "       Verific database library"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/database/")
+
+
+add_custom_target(BuildVerificContainers DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/containers-linux.a)
+add_custom_command(
+    OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/containers-linux.a
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/Array.h
+    COMMAND echo "       Build Verific containers library"
+    COMMAND make CFLAGS="-DVERIFIC_ENABLE_ZLIB=1"
+    COMMAND echo "       Verific containers library"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/")
+
+
+add_custom_target(BuildVerificUtil DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/util/util-linux.a)
+add_custom_command(
+      OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/util/util-linux.a
+      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/util/VerificSystem.h
+      COMMAND echo "       Build Verific util library"
+      COMMAND make CFLAGS="-DVERIFIC_ENABLE_ZLIB=1"
+      COMMAND echo "       Verific util library"
+      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/util/")
+
 ###############################################################################
 # Subsystem
 ###############################################################################
@@ -49,10 +92,34 @@ add_subdirectory(third_party/backward-cpp)
 ###############################################################################
 
 add_executable(liberty2json ${CMAKE_CURRENT_SOURCE_DIR}/liberty2json.cpp 
-                            ${PROJECT_SOURCE_DIR}/third_party/backward-cpp/backward.cpp 
+                            ${PROJECT_SOURCE_DIR}/third_party/backward-cpp/backward.cpp
+                            ${PROJECT_SOURCE_DIR}/VerificLibertyParser.cpp
+                            ${PROJECT_SOURCE_DIR}/JsonVisitor.cpp
                             ${LIB_SOURCES} ${LIB_HEADERS} ${FLEX_BISON_SOURCES})
 target_include_directories(liberty2json PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(liberty2json PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/)
+target_include_directories(liberty2json PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/util/)
+target_include_directories(liberty2json PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/)
 target_link_libraries(liberty2json PUBLIC Backward::Interface)
+
+add_library(synlib STATIC IMPORTED)
+set_target_properties(synlib PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/synlib-linux.a)
+add_dependencies(synlib BuildVerificLiberty)
+
+add_library(containers STATIC IMPORTED)
+set_target_properties(containers PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/containers-linux.a)
+add_dependencies(containers BuildVerificContainers)
+
+add_library(database STATIC IMPORTED)
+set_target_properties(database PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/database/database-linux.a)
+add_dependencies(database BuildVerificDatabase)
+
+add_library(util STATIC IMPORTED)
+set_target_properties(util PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/util/util-linux.a)
+add_dependencies(util BuildVerificUtil)
+
+# !!! The order of the libraries is very specific to avoid undefined symbols !!!
+target_link_libraries(liberty2json PUBLIC synlib database containers util z)
 
 ###############################################################################
 # Executable target for syntform
