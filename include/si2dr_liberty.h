@@ -150,7 +150,7 @@ typedef enum si2drValueTypeT
     SI2DR_STRING              = SI2_STRING,
     SI2DR_FLOAT64             = SI2_DOUBLE,
     SI2DR_BOOLEAN             = SI2_BOOLEAN,
-	SI2DR_EXPR                = SI2_EXPR,
+	  SI2DR_EXPR                = SI2_EXPR,
     SI2DR_MAX_VALUETYPE       = SI2_MAX_VALUETYPE
 } si2drValueTypeT;
 
