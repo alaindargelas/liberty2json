@@ -18,7 +18,7 @@ main(int argc,char **argv)
 	si2drDefineIdT d1,d2,d3;
 	si2drDefineIdT e1,e2,e3;
 	
-	char buf1[100];
+	char buf1[SI2DR_MAX_STRING_LEN];
 
 	si2drStringT defname, defallowed;
 	si2drValueTypeT deftype;
