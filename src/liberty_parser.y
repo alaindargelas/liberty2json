@@ -60,7 +60,7 @@ int yyerror(char *);
    si2drValueTypeT convert_vt(char *type);
    int lineno;
    int syntax_errors;
-   static char PB[8000]; /* so as not to have a bunch of local buffers */
+   static char PB[SI2DR_MAX_STRING_LEN]; /* so as not to have a bunch of local buffers */
    extern int tight_colon_ok;
    extern char token_comment_buf[SI2DR_MAX_STRING_LEN]; 
    extern char token_comment_buf2[SI2DR_MAX_STRING_LEN];
@@ -486,7 +486,7 @@ void push_group(liberty_head *h )
    {
       if( v->type != LIBERTY__VAL_STRING )
       {
-         char buf[1000],*buf2;
+         char buf[SI2DR_MAX_STRING_LEN],*buf2;
 
          if( v->type == LIBERTY__VAL_INT )
          {
@@ -563,6 +563,11 @@ void pop_group(liberty_head *h)
 
 void make_complex(liberty_head *h)
 {
+   // SILIMATE: ignore all complex attributes (except for bundle members)
+   if (si2drPIGetIgnoreComplexAttrs() && strcmp(h->name, "members") != 0) {
+      return;
+   }
+
    liberty_attribute_value *v,*vn;
 
    curr_attr=si2drGroupCreateAttr(gs[gsindex-1],h->name,SI2DR_COMPLEX,&err);
@@ -628,16 +633,5 @@ si2drValueTypeT convert_vt(char *type)
 
 int yyerror(char *s) // SILIMATE: explicitly set return type to int
 {
-   si2drErrorT err;
-
-   si2drMessageHandlerT MsgPrinter;
-
-   MsgPrinter = si2drPIGetMessageHandler(&err); /* the printer is in another file! */
-
-   sprintf(PB,"===\nERROR === %s file: %s, line number %d\nERROR ===", s, curr_file, lineno);
-   (*MsgPrinter)(SI2DR_SEVERITY_ERR, SI2DR_SYNTAX_ERROR, 
-         PB, 
-         &err);
-
    syntax_errors++;
 }

@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 	{
 		if( strncmp(dp->d_name,"syntax.",7) == 0 && strlen(dp->d_name) > 8)
 		{
-			char fname[1000];
+			char fname[SI2DR_MAX_STRING_LEN];
 
 			/* foreach file in the desc dir */
 			

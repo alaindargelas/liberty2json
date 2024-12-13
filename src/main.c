@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 {
 	si2drErrorT err;
 	FILE *ifile;
-	char buf1[1000];
+	char buf1[SI2DR_MAX_STRING_LEN];
 	si2drGroupsIdT groups;
 	si2drGroupIdT group;
 	si2drStringT nam;
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 	int version = 0;
 	int help = 0;
 	int strtab_tots = 0;
-	char filename[1000];
+	char filename[SI2DR_MAX_STRING_LEN];
 	int i;
 	extern char *curr_file;
 	

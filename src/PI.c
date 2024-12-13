@@ -94,6 +94,7 @@ static int l__iter_attr_count = 0;
 static int l__iter_def_count = 0;
 static int liberty___debug_mode = 0;
 static int liberty___nocheck_mode = 0;
+static int liberty___ignore_complex_attrs = 0;
 static FILE *liberty___trace_mode_CFP = 0;
 static FILE *liberty___trace_mode_HFP = 0;
 
@@ -106,7 +107,7 @@ static int tracecount = 0;
 static int tracefilecount = 0;
 static int tracefunc = 0;
 static int trace_grand_total = 0;
-static char tracefbase[500];
+static char tracefbase[SI2DR_MAX_STRING_LEN];
 static FILE *tracefile1, *tracefile2;
 
 
@@ -145,7 +146,7 @@ static char *vt_string(si2drValueTypeT vt)
       case SI2DR_UNDEFINED_VALUETYPE:return "SI2DR_UNDEFINED_VALUETYPE";
       case SI2DR_INT32:return "SI2DR_INT32";
       case SI2DR_STRING:return "SI2DR_STRING";
-      case SI2DR_FLOAT64:return "SI2DR_FLOAT32";
+      case SI2DR_FLOAT64:return "SI2DR_FLOAT64";
       case SI2DR_BOOLEAN:return "SI2DR_BOOLEAN";
       case SI2DR_MAX_VALUETYPE:return "SI2DR_MAX_VALUETYPE";
       default:
@@ -167,7 +168,7 @@ static char *at_string(si2drAttrTypeT vt)
 static char *oid_string(si2drObjectIdT oid)
 {
    static int index = 0;
-   static char buf[10][500];
+   static char buf[10][SI2DR_MAX_STRING_LEN];
    if( index == 10 )
       index = 0;
    if( oid.v1 == 0 && oid.v2 == 0 )
@@ -182,7 +183,7 @@ static char *iter_string(si2drIterIdT iter)
 {
    iterat *y = (iterat*)iter;
    static int index = 0;
-   static char buf[10][500];
+   static char buf[10][SI2DR_MAX_STRING_LEN];
    char *itype = 0;
 
    if( index == 10 )
@@ -287,7 +288,7 @@ static void inc_tracecount(void)
 
       if( (tracefunc % 6) == 0 )
       {
-         char buf[100];
+         char buf[SI2DR_MAX_STRING_LEN];
 
          tracefilecount++;
 
@@ -328,7 +329,18 @@ static void inc_tracecount(void)
    }
 }
 
-
+si2drVoidT si2drPISetIgnoreComplexAttrs()
+{
+   liberty___ignore_complex_attrs = 1;
+}
+si2drVoidT si2drPIUnSetIgnoreComplexAttrs()
+{
+   liberty___ignore_complex_attrs = 0;
+}
+si2drBooleanT si2drPIGetIgnoreComplexAttrs()
+{
+   return liberty___ignore_complex_attrs;
+}
 
 si2drVoidT  si2drPISetDebugMode(si2drErrorT  *err)
 {
@@ -455,8 +467,8 @@ si2drMessageHandlerT si2drPIGetMessageHandler( si2drErrorT *err)
 si2drVoidT  si2drPISetTraceMode(si2drStringT fname,
       si2drErrorT  *err)
 {
-   char fnamet[1000];
-   char fnameth[1000];
+   char fnamet[SI2DR_MAX_STRING_LEN];
+   char fnameth[SI2DR_MAX_STRING_LEN];
 
    strcpy(tracefbase, fname);
 
@@ -556,7 +568,7 @@ si2drGroupIdT  si2drPICreateGroup     ( si2drStringT name,
    si2drGroupIdT retoid, toid;
    const libGroupMap *lgm;
    liberty_group *g;
-   char nameb[1500],*nnb=0;
+   char nameb[SI2DR_MAX_STRING_LEN],*nnb=0;
    int nbl=0;
    int npl = strlen(group_type)+4;
 
@@ -2007,7 +2019,7 @@ si2drDefineIdT si2drGroupCreateDefine ( si2drGroupIdT group,
       liberty_hash_lookup(g->define_hash, name, &toid);
       if( toid.v1 != (void*)0 )
       {
-         char buf[10000], *p,*q;
+         char buf[SI2DR_MAX_STRING_LEN], *p,*q;
          d = (liberty_define *)toid.v2;
 
          strcpy(buf, d->group_type);
@@ -2146,7 +2158,7 @@ si2drGroupIdT  si2drGroupCreateGroup  ( si2drGroupIdT group,
    liberty_group *g = (liberty_group*)group.v2;
    liberty_group *ng;
    const libGroupMap *lgm;
-   char nameb[1500],*nnb=0;
+   char nameb[SI2DR_MAX_STRING_LEN],*nnb=0;
    int nbl=0, dont_addhash = 0;
    int npl = strlen(group_type)+4;
 
@@ -2327,7 +2339,7 @@ si2drVoidT     si2drGroupAddName      ( si2drGroupIdT group,
    liberty_group *g = (liberty_group*)group.v2;
    liberty_group *gp = g->owner;
    liberty_name_list *nlp;
-   char nameb[1500],*nnb;
+   char nameb[SI2DR_MAX_STRING_LEN],*nnb;
    int nbl;
    int npl = strlen(g->type)+4;
 
@@ -2483,7 +2495,7 @@ si2drVoidT     si2drGroupDeleteName   ( si2drGroupIdT group,
    liberty_group *g = (liberty_group*)group.v2;
    liberty_group *gp = g->owner;
    liberty_name_list *nlp, *nlp_last;
-   char nameb[1500];
+   char nameb[SI2DR_MAX_STRING_LEN];
    int nbl=0;
 
    sprintf(nameb,"%s||||%s",g->type,name);
@@ -2600,7 +2612,7 @@ si2drGroupIdT  si2drPIFindGroupByName     ( si2drStringT name,
       si2drErrorT  *err)
 {
    si2drGroupIdT retoid;
-   char nameb[1500];
+   char nameb[SI2DR_MAX_STRING_LEN];
    int nbl=0;
 
    *err = SI2DR_NO_ERROR;
@@ -2683,7 +2695,7 @@ si2drGroupIdT  si2drGroupFindGroupByName  ( si2drGroupIdT group,
 {
    si2drGroupIdT retoid;
    liberty_group *g = (liberty_group*)group.v2;
-   char nameb[1500];
+   char nameb[SI2DR_MAX_STRING_LEN];
 
    sprintf(nameb,"%s||||%s",type,name);
 
@@ -3947,7 +3959,7 @@ si2drVoidT       si2drPIQuit                  ( si2drErrorT  *err)
          || l__iter_def_count != 0 )
    {
       si2drErrorT err2;
-      char tbuf[1000];
+      char tbuf[SI2DR_MAX_STRING_LEN];
 
       (*si2ErrMsg)(SI2DR_SEVERITY_WARN, SI2DR_NO_ERROR,
             "si2drPIQuit: Poor Coding Practice Detected--\n\
@@ -4240,7 +4252,7 @@ si2drVoidT       si2drReadLibertyFile         ( char *filename,
 {
    extern FILE *liberty_parser2_in;
    int in_trace = 0;
-   char comm[500];
+   char comm[SI2DR_MAX_STRING_LEN];
    extern char *curr_file;
    extern int syntax_errors;
 
@@ -4350,7 +4362,7 @@ int lib__name_needs_to_be_quoted(char *name)
 char *expr_string( si2drExprT *e)
 {
    char *buf1 = NULL;
-   char tbuf[10000];
+   char tbuf[SI2DR_MAX_STRING_LEN];
    char *lefts=0,*rights=0;
    if( e->left )
       lefts = expr_string(e->left);
@@ -4366,9 +4378,15 @@ char *expr_string( si2drExprT *e)
                buf1 = liberty_strtable_enter_string(master_string_table,tbuf);
                break;
             case SI2DR_FLOAT64:
+               sprintf(tbuf,"%g", e->u.d);
                buf1 = liberty_strtable_enter_string(master_string_table,tbuf);
                break;
             case SI2DR_INT32:
+               sprintf(tbuf,"%d", e->u.i);
+               buf1 = liberty_strtable_enter_string(master_string_table,tbuf);
+               break;
+            case SI2DR_BOOLEAN:
+               sprintf(tbuf,"%d", e->u.b);
                buf1 = liberty_strtable_enter_string(master_string_table,tbuf);
                break;
             default:
@@ -4426,7 +4444,7 @@ char *expr_string( si2drExprT *e)
 
 void lib__write_group(FILE *of, si2drGroupIdT group, char *indent, char *cellname)
 {
-   char indent2[200];
+   char indent2[SI2DR_MAX_STRING_LEN];
    si2drErrorT err;
    si2drStringT str;
    si2drNamesIdT names;
@@ -4507,7 +4525,7 @@ void lib__write_group(FILE *of, si2drGroupIdT group, char *indent, char *cellnam
       }
       if( valtype != SI2DR_UNDEFINED_VALUETYPE ){
          char *p,*q;
-         char strTmp[100]={0};
+         char strTmp[SI2DR_MAX_STRING_LEN]={0};
          q = gnam;
          while( (p = strchr(q,'|')) )
          {
@@ -4520,7 +4538,7 @@ void lib__write_group(FILE *of, si2drGroupIdT group, char *indent, char *cellnam
       }
       else{
          char *p,*q;
-         char strTmp[100]={0};
+         char strTmp[SI2DR_MAX_STRING_LEN]={0};
          q = gnam;
          while( (p = strchr(q,'|')) )
          {

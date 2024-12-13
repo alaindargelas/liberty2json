@@ -50,8 +50,8 @@ void check_ccs_density( si2drGroupIdT group );
 
 si2drMessageHandlerT MsgPrinter;
 
-static char EB[8000]; /* just so I don't have to declare buffers all over the place,
-                         to prepare output for output error messages */
+static char EB[SI2DR_MAX_STRING_LEN]; /* just so I don't have to declare buffers all over the place,
+                                         to prepare output for output error messages */
 
 static int isa_formula(char *str)
 {
@@ -187,7 +187,7 @@ si2drErrorT syntax_check(si2drGroupIdT lib)
 	si2drExprT     *expr;
 	si2drBooleanT   bool;
 	int found, first,i, dmln, tcln;
-	char model[100], tech[100];
+	char model[SI2DR_MAX_STRING_LEN], tech[SI2DR_MAX_STRING_LEN];
 	si2drStringT tcfn;
 	si2drStringT dmfn;
 	si2drAttrTypeT atype;
@@ -1974,7 +1974,7 @@ static void check_lu_table_template_arraysize( si2drGroupIdT group)
 	si2drIterQuit(names,&err);
 	if( str && str[0] )
 	{
-		char strx[8000];
+		char strx[SI2DR_MAX_STRING_LEN];
 		strcpy(strx,str);
 
 		if(  !strcmp(strx,"scalar") )
@@ -2698,7 +2698,7 @@ static void check_power_lut_template_arraysize( si2drGroupIdT group)
 	si2drIterQuit(names,&err);
 	if( str && str[0] )
 	{
-		char strx[8000];
+		char strx[SI2DR_MAX_STRING_LEN];
 		strcpy(strx,str);
 
 		if(  !strcmp(strx,"scalar") )
@@ -3735,7 +3735,7 @@ static void check_bus_pin_directions(si2drGroupIdT group) /* group is bus or bun
 	si2drErrorT err;
 	si2drAttrIdT bdir, pdir;
 	group_enum gt;
-	char buf[100];
+	char buf[SI2DR_MAX_STRING_LEN];
 	si2drStringT dirstr;
 	
 	bdir = si2drGroupFindAttrByName(group, "direction", &err);
@@ -4181,7 +4181,7 @@ static void gen_var_list(char *formula)
 {
 	/* a very crude boolean algebra formula parser */
 	char *p,*q;
-	char varname[100];
+	char varname[SI2DR_MAX_STRING_LEN];
 
 	
 	p = formula;
@@ -4486,7 +4486,7 @@ static void check_ff_bank_widths(si2drGroupIdT group) /* called for ff_banks */
 	int ffbankwidth= 0;
 	si2drAttrIdT attr;
 	si2drGroupIdT cell;
-	char busnam[1000];
+	char busnam[SI2DR_MAX_STRING_LEN];
 	
 	names = si2drGroupGetNames(group, &err);
 	str = si2drIterNextName(names,&err);
@@ -4807,7 +4807,7 @@ static void check_index_x(si2drStringT indnam, si2drGroupIdT group)
 
 		if( inval )
 		{
-			char buf[1000];
+			char buf[SI2DR_MAX_STRING_LEN];
 			strcpy(buf,get_first_group_name(group)); /* do this because si2dr strings are volatile.  */
 			
 			lib = get_containing_group(group,"library");
@@ -5518,7 +5518,7 @@ static void check_output_current_template( si2drGroupIdT group )
 
 static struct reference_time_vals
 {
-	char template[NUMENTRIES][200];
+	char template[NUMENTRIES][SI2DR_MAX_STRING_LEN];
 	si2drFloat64T val[NUMENTRIES];
 	LONG_DOUBLE translew[NUMENTRIES];
 	int count[NUMENTRIES];
@@ -6410,7 +6410,7 @@ void check_group_correspondence( si2drGroupIdT g, libsynt_group_info *gi )
 	
 	int gl   = si2drObjectGetLineNo(g,&err);
 	char *gf = si2drObjectGetFileName(g,&err);
-	char gtype[100];
+	char gtype[SI2DR_MAX_STRING_LEN];
 	
 	/* check all group attributes, including names, etc. to constraints */
 
@@ -6550,7 +6550,7 @@ void check_group_correspondence( si2drGroupIdT g, libsynt_group_info *gi )
 				si2drValueTypeT valtype;
 				si2drStringT   allowed_group, name;
 				si2drAttrTypeT t = si2drAttrGetAttrType(attr,&err);
-				char buf[1000],*p,*q;
+				char buf[SI2DR_MAX_STRING_LEN],*p,*q;
 				int dl = si2drObjectGetLineNo(def,&err);
 				char *df = si2drObjectGetFileName(def,&err);
 				si2drDefineGetInfo(def, &name, &allowed_group, &valtype, &err);

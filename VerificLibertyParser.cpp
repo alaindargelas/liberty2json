@@ -19,7 +19,7 @@ using json = nlohmann::json;
 VerificLibertyParser::VerificLibertyParser(std::string filename)
 {
 	status = reader.Analyze(filename.c_str());
-	reader.PrettyPrint(std::string(filename + ".debug").c_str());
+	//reader.PrettyPrint(std::string(filename + ".debug").c_str());
 }
 
 VerificLibertyParser::~VerificLibertyParser()

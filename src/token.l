@@ -156,8 +156,8 @@ static int lline;
 extern int lineno;
 int save_lineno, save_lline;
 int tight_colon_ok = 0;
-static char filenamebuf[1024];
-static char string_buf[80960];
+static char filenamebuf[SI2DR_MAX_STRING_LEN];
+static char string_buf[SI2DR_MAX_STRING_LEN];
 char token_comment_buf[SI2DR_MAX_STRING_LEN]; /* the buffer to hold comments in */
 char token_comment_buf2[SI2DR_MAX_STRING_LEN]; /* the spare buffer to hold more comments in */
 int comment_overflow=0;
@@ -385,7 +385,7 @@ void clean_file_name(char *dirty, char *clean)
        then make sure it exists in the current dir or the path; if 
        it exists in the path, plug in the path component into the name,
        so the later fopen will find it */
-	char cleanbuf[4096],*p,anotherbuf[4096];
+	char cleanbuf[SI2DR_MAX_STRING_LEN],*p,anotherbuf[SI2DR_MAX_STRING_LEN];
 	p = dirty;
 	
     while( *p && (*p == '"' || *p == ' ' || *p == '\t' ) )
@@ -407,7 +407,7 @@ void clean_file_name(char *dirty, char *clean)
 	else
 	{
 		/* hmmm, not in the current directory? */
-		char enbuf[20256];
+		char enbuf[SI2DR_MAX_STRING_LEN];
 		
 		char *en = getenv("LIBERTY_PARSER_SEARCH_PATH");
 		if( !en )
