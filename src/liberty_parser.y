@@ -563,7 +563,8 @@ void pop_group(liberty_head *h)
 
 void make_complex(liberty_head *h)
 {
-   if (si2drPIGetIgnoreComplexAttrs()) {
+   // SILIMATE: ignore all complex attributes (except for bundle members)
+   if (si2drPIGetIgnoreComplexAttrs() && strcmp(h->name, "members") != 0) {
       return;
    }
 

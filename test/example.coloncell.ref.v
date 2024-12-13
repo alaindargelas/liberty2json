@@ -2,7 +2,7 @@
 
 (* leakage_power_unit = "1pW" *)
 (* LeakagePower = "0" *)
-(* area = "Unsupported type" *)
+(* area = "50" *)
 (* blackbox =  1  *)
 module \b:c ();
 endmodule
