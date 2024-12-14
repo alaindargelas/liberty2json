@@ -61,7 +61,7 @@ add_custom_command(
   OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/synlib-linux.a
   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/synlib_file.h
   COMMAND echo "       Build Verific Liberty parser library"
-  COMMAND make CFLAGS="-DVERIFIC_ENABLE_ZLIB=1"
+  COMMAND make CFLAGS="-DVERIFIC_ENABLE_ZLIB=1" VERSION=-O3
   COMMAND echo "       Verific Liberty parser library"
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/")
 
@@ -70,7 +70,7 @@ add_custom_command(
     OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/database/database-linux.a
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/database/DataBase.h
     COMMAND echo "       Build Verific database library"
-    COMMAND make CFLAGS="-DVERIFIC_ENABLE_ZLIB=1"
+    COMMAND make CFLAGS="-DVERIFIC_ENABLE_ZLIB=1" VERSION=-O3
     COMMAND echo "       Verific database library"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/database/")
 
@@ -80,7 +80,7 @@ add_custom_command(
     OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/containers-linux.a
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/Array.h
     COMMAND echo "       Build Verific containers library"
-    COMMAND make CFLAGS="-DVERIFIC_ENABLE_ZLIB=1"
+    COMMAND make CFLAGS="-DVERIFIC_ENABLE_ZLIB=1" VERSION=-O3
     COMMAND echo "       Verific containers library"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/")
 
@@ -90,7 +90,7 @@ add_custom_command(
       OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/util/util-linux.a
       DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/util/VerificSystem.h
       COMMAND echo "       Build Verific util library"
-      COMMAND make CFLAGS="-DVERIFIC_ENABLE_ZLIB=1"
+      COMMAND make CFLAGS="-DVERIFIC_ENABLE_ZLIB=1" VERSION=-O3
       COMMAND echo "       Verific util library"
       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/util/")
 
