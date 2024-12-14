@@ -86,10 +86,16 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibAssign, node)
     //std::cout << "\nEnd Visit: SynlibAssign" << std::endl;
 }
 
-
 nlohmann::json jsonValue(SynlibExpr *expr) {
     nlohmann::json result;
-    if (dynamic_cast<SynlibString*>(expr)) {
+    std::string true_s = "true";
+    std::string false_s = "false";
+    const char* s = expr->Image();
+    if (true_s == std::string(s)) {
+        result = 1;
+    } else if (false_s == std::string(s)) {
+        result = 0;
+    } else if (dynamic_cast<SynlibString*>(expr)) {
         result = expr->String();
     } else {
         result = expr->Image();
@@ -201,7 +207,8 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibExpr, node)
     if (!image)
         return;
     nlohmann::json simple_expr;
-    simple_expr = image;
+    //std::cout << "Image: " << image << std::endl;
+    simple_expr = jsonValue(&node);
     _jstack.push(simple_expr);
     Strings::free(image);
     //std::cout << "\nEnd Visit: SynlibExpr" << std::endl;
@@ -219,7 +226,6 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibReal, node)
     Strings::free(image);
     //std::cout << "\nEnd Visit: SynlibReal" << std::endl;
 }
-
 
 void SynlibJsonVisitor::SYNLIB_VISIT(SynlibInt, node)
 {
@@ -241,8 +247,9 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibString, node)
     char *image = node.Image();
     if (!image)
         return;
+    //std::cout << "Image: " << image << std::endl;
     nlohmann::json simple_expr;
-    simple_expr = node.String();
+    simple_expr = jsonValue(&node);
     _jstack.push(simple_expr);
     Strings::free(image);
     //std::cout << "\nEnd Visit: SynlibString" << std::endl;

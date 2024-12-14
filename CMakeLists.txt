@@ -4,16 +4,29 @@
 
 cmake_minimum_required(VERSION 3.5)
 project(Liberty2JSON C CXX)
-set(CMAKE_BUILD_TYPE RELEASE)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# Detect build type, fallback to release and throw a warning if use didn't
+# specify any
+if(NOT CMAKE_BUILD_TYPE)
+  message(WARNING "Build type not set, falling back to RELEASE mode.
+ To specify build type use:
+ -DCMAKE_BUILD_TYPE=<mode> where <mode> is DEBUG or RELEASE.")
+  set(CMAKE_BUILD_TYPE
+      "RELEASE"
+      CACHE STRING "Choose the type of build, options are: DEBUG RELEASE."
+            FORCE)
+endif(NOT CMAKE_BUILD_TYPE)
+
 set(CMAKE_CXX_FLAGS_DEBUG
-"${CMAKE_CXX_FLAGS_DEBUG} -Wall -g"
+"${CMAKE_CXX_FLAGS_DEBUG} -Wall -O3 -g"
 )
 set(CMAKE_CXX_FLAGS_RELEASE
-"${CMAKE_CXX_FLAGS_RELEASE} -Wall -O3 -g"
+"${CMAKE_CXX_FLAGS_RELEASE} -Wall -O3"
 )
+
+set (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}})
 
 ###############################################################################
 # Fetch files
