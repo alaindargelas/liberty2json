@@ -162,7 +162,7 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
                 nlohmann::json v = lookahead;
                 for (const auto &[keyo, valueo] : v.items())
                 {
-                    if (valueo.size() == 2)
+                    if (valueo.size() == 2 || valueo.size() == 3)
                     {
                         nlohmann::json st;
                         if (defines["defines"].contains(valueo.at(0)))
@@ -173,22 +173,10 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
                         else
                         {
                             st["allowed_group_name"] = valueo.at(1);
-                            st["valtype"] = "undefined_valuetype";
-                            defines["defines"][valueo.at(0)] = st;
-                        }
-                    }
-                    else if (valueo.size() == 3)
-                    {
-                        nlohmann::json st;
-                        if (defines["defines"].contains(valueo.at(0)))
-                        {
-                            std::string prev = defines["defines"][valueo.at(0)]["allowed_group_name"];
-                            defines["defines"][valueo.at(0)]["allowed_group_name"] = prev + "|" + valType(valueo.at(1));
-                        }
-                        else
-                        {
-                            st["allowed_group_name"] = valueo.at(1);
-                            st["valtype"] = valType(valueo.at(2));
+                            if (valueo.size() == 2)
+                                st["valtype"] = "undefined_valuetype";
+                            else 
+                                st["valtype"] = valType(valueo.at(2));
                             defines["defines"][valueo.at(0)] = st;
                         }
                     }
