@@ -68,7 +68,7 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibComplexAttr, node)
         TraverseNode(expr);
         if (_jstack.size()) {
             complex_attr[node.GetName()].push_back(_jstack.top());
-            //std::cout << "COMPLEX_ATTRIBUTE: " << _jstack.top().dump() << std::endl;
+            std::cout << "COMPLEX_ATTRIBUTE: " << _jstack.top().dump() << std::endl;
             _jstack.pop();
         }
     }
@@ -135,7 +135,16 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
             if (lookahead.contains("define") || lookahead.contains("define_group")) {
                 nlohmann::json v = lookahead;
                 for (const auto& [keyo, valueo] : v.items()) {
-                     defines["defines"].push_back(valueo);
+                    if (valueo.size() == 2) {
+                      nlohmann::json name;
+                      nlohmann::json st;
+                      st["allowed_group_name"] = valueo.at(1);
+                      st["valtype"] = "undefined_valuetype";
+                      name[valueo.at(0)] = st;
+                      defines["defines"].push_back(name);
+                    } else {
+                        defines["defines"].push_back(valueo);
+                    }
                 }
             } else {
                 if (dynamic_cast<SynlibGroup*>(stmt)) {
