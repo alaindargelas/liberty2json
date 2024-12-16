@@ -40,7 +40,6 @@ static std::string TAB = "  ";
 
 void SynlibJsonVisitor::SYNLIB_VISIT(SynlibAttr, node)
 {
-    // std::cout << "Visit: SynlibAttr" << std::endl;
     if (node.GetValue())
         TraverseNode(node.GetValue());
     nlohmann::json simple_attr;
@@ -52,16 +51,13 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibAttr, node)
         {
             simple_attr[node.GetName()] = valueo;
         }
-        // std::cout << "ATTRIBUTE: " << simple_attr.dump() << std::endl;
         _jstack.pop();
     }
     _jstack.push(simple_attr);
-    // std::cout << "\nEnd Visit: SynlibAttr" << std::endl;
 }
 
 void SynlibJsonVisitor::SYNLIB_VISIT(SynlibComplexAttr, node)
 {
-    // std::cout << "Visit: SynlibComplexAttr" << std::endl;
     unsigned i;
     SynlibExpr *expr;
     nlohmann::json complex_attr;
@@ -71,22 +67,10 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibComplexAttr, node)
         if (_jstack.size())
         {
             complex_attr[node.GetName()].push_back(_jstack.top());
-            // std::cout << "COMPLEX_ATTRIBUTE: " << _jstack.top().dump() << std::endl;
             _jstack.pop();
         }
     }
     _jstack.push(complex_attr);
-    // std::cout << "\nEnd Visit: SynlibComplexAttr" << std::endl;
-}
-
-void SynlibJsonVisitor::SYNLIB_VISIT(SynlibAssign, node)
-{
-    // std::cout << "Visit: SynlibAssign" << std::endl;
-    // std::cout << node.GetName() << " = ";
-    char *image = (node.GetValue()) ? node.GetValue()->Image() : 0;
-    // std::cout << ((image) ? image : "") << " ; " << std::endl;
-    Strings::free(image);
-    // std::cout << "\nEnd Visit: SynlibAssign" << std::endl;
 }
 
 nlohmann::json jsonValue(SynlibExpr *expr)
@@ -129,9 +113,7 @@ std::string valType(std::string type)
 
 void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
 {
-    // std::cout << "Visit: SynlibGroup" << std::endl;
     unsigned i;
-    // std::cout << "Visit arguments" << std::endl;
     SynlibExpr *expr;
     std::vector<nlohmann::json> names;
     FOREACH_ARRAY_ITEM(node.GetArguments(), i, expr)
@@ -142,10 +124,8 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
             names.push_back(jsonValue(expr));
         }
     }
-    // std::cout << "\nEnd Visit arguments" << std::endl;
     _tab++;
 
-    // std::cout << "Visit statements" << std::endl;
     nlohmann::json defines;
     nlohmann::json groups;
     nlohmann::json attributes;
@@ -194,14 +174,13 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
                 }
                 else
                 {
-                    // std::cout << "ATTR in STMT: " << lookahead.dump() << std::endl;
                     attributes["attributes"].push_back(lookahead);
                 }
             }
             _jstack.pop();
         }
     }
-    // std::cout << "\nEnd Visit statements" << std::endl;
+
     nlohmann::json jnames;
     for (auto n : names)
     {
@@ -246,7 +225,6 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
                 {
                     // Attributes
                     j[node.GetName()][keyo] = valueo;
-                    // std::cout << node.GetName() << " Val: " << v.dump() << " key: " << keyo << " v: " << valueo << std::endl;
                 }
             }
         }
@@ -257,26 +235,21 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
 
         _jstack.push(j);
     }
-    // std::cout << "\nEnd Visit: SynlibGroup" << std::endl;
 }
 
 void SynlibJsonVisitor::SYNLIB_VISIT(SynlibExpr, node)
 {
-    // std::cout << "Visit: SynlibExpr" << std::endl;
     char *image = node.Image();
     if (!image)
         return;
     nlohmann::json simple_expr;
-    // std::cout << "Image: " << image << std::endl;
     simple_expr = jsonValue(&node);
     _jstack.push(simple_expr);
     Strings::free(image);
-    // std::cout << "\nEnd Visit: SynlibExpr" << std::endl;
 }
 
 void SynlibJsonVisitor::SYNLIB_VISIT(SynlibReal, node)
 {
-    // std::cout << "Visit: SynlibReal" << std::endl;
     char *image = node.Image();
     if (!image)
         return;
@@ -284,12 +257,10 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibReal, node)
     simple_expr = node.Double();
     _jstack.push(simple_expr);
     Strings::free(image);
-    // std::cout << "\nEnd Visit: SynlibReal" << std::endl;
 }
 
 void SynlibJsonVisitor::SYNLIB_VISIT(SynlibInt, node)
 {
-    // std::cout << "Visit: SynlibInt" << std::endl;
     char *image = node.Image();
     if (!image)
         return;
@@ -297,21 +268,17 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibInt, node)
     simple_expr = node.Int();
     _jstack.push(simple_expr);
     Strings::free(image);
-    // std::cout << "\nEnd Visit: SynlibInt" << std::endl;
 }
 
 void SynlibJsonVisitor::SYNLIB_VISIT(SynlibString, node)
 {
-    // std::cout << "Visit: SynlibString" << std::endl;
     char *image = node.Image();
     if (!image)
         return;
-    // std::cout << "Image: " << image << std::endl;
     nlohmann::json simple_expr;
     simple_expr = jsonValue(&node);
     _jstack.push(simple_expr);
     Strings::free(image);
-    // std::cout << "\nEnd Visit: SynlibString" << std::endl;
 }
 
 /* -------------------------------------------------------------- */

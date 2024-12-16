@@ -48,9 +48,12 @@ class SynLibertyParser : public LibertyParser {
 			si2drIterQuit(groups, &err);
 			return result;
 		}
-		void to_json_file(string filename) {
+		void to_json_file(string filename, bool indent) {
 			std::ofstream file(filename);
-			file << as_json().dump();
+			if (indent)
+				file << as_json().dump(2);
+			else
+				file << as_json().dump();
 			file.close();
 		}
 	

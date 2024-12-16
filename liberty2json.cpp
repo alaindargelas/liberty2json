@@ -14,6 +14,7 @@ int main(int argc, char *argv[]) {
 	program.add_argument("--outfile").help("name of the output JSON file");
 	program.add_argument("--check").help("check the Liberty file for errors").flag();
 	program.add_argument("--debug").help("enable debug mode").flag();
+	program.add_argument("--indent").help("enable debug mode").flag();
 	program.add_argument("--ignore-complex-attrs").help("ignore complex attributes").flag();
 	program.add_argument("--verific").help("Verific parser").flag();
   try {
@@ -36,7 +37,7 @@ int main(int argc, char *argv[]) {
 			parser->check();
 		}
 		if (program.is_used("--outfile")) {
-			parser->to_json_file(program.get<std::string>("--outfile"));
+			parser->to_json_file(program.get<std::string>("--outfile"), (program.get<bool>("--indent")));
 		} else {
 			std::cout << parser->as_json().dump(2) << std::endl;
 		}

@@ -68,7 +68,6 @@ public:
     // Overrides
     virtual void SYNLIB_VISIT(SynlibAttr, node) ;
     virtual void SYNLIB_VISIT(SynlibComplexAttr, node) ;
-    virtual void SYNLIB_VISIT(SynlibAssign, node) ;
     virtual void SYNLIB_VISIT(SynlibGroup, node) ;
     virtual void SYNLIB_VISIT(SynlibExpr, node) ;
     virtual void SYNLIB_VISIT(SynlibReal, node) ;
