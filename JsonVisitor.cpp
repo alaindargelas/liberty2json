@@ -76,18 +76,17 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibComplexAttr, node)
 nlohmann::json jsonValue(SynlibExpr *expr)
 {
     nlohmann::json result;
-    std::string true_s = "true";
-    std::string false_s = "false";
     const char *s = expr->Image();
-    if (true_s == std::string(s))
+    SYNLIB_CLASS_ID expr_type = expr->GetClassId();
+    if (!strcmp(s, "true"))
     {
         result = 1;
     }
-    else if (false_s == std::string(s))
+    else if (!strcmp(s, "false"))
     {
         result = 0;
     }
-    else if (dynamic_cast<SynlibString *>(expr))
+    else if (expr_type == ID_SYNLIBSTRING)
     {
         result = expr->String();
     }
@@ -137,6 +136,7 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
         if (_jstack.size())
         {
             nlohmann::json lookahead = _jstack.top();
+            SYNLIB_CLASS_ID stmt_type = stmt->GetClassId();
             // Defines use one of either keywords 
             if (lookahead.contains("define") || lookahead.contains("define_group"))
             {
@@ -168,7 +168,7 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
                 }
             }
             // Groups are one of the SynlibGroup subclass
-            else if (dynamic_cast<SynlibGroup *>(stmt))
+            else if (stmt_type == ID_SYNLIBGROUP || stmt_type == ID_SYNLIBLIBRARY || stmt_type == ID_SYNLIBCELL || stmt_type == ID_SYNLIBPIN || stmt_type == ID_SYNLIBBUS || stmt_type == ID_SYNLIBBUNDLE || stmt_type == ID_SYNLIBFLIPFLOP || stmt_type == ID_SYNLIBLATCHBANK || stmt_type == ID_SYNLIBLATCH || stmt_type == ID_SYNLIBLATCHBANK || stmt_type == ID_SYNLIBLUT || stmt_type == ID_SYNLIBSTATETABLE || stmt_type == ID_SYNLIBTYPE || stmt_type == ID_SYNLIBTESTCELL || stmt_type == ID_SYNLIBOPERATINGCONDITIONS || stmt_type == ID_SYNLIBLEAKAGEPOWER)
             {
                 groups["groups"].push_back(lookahead);
             }
