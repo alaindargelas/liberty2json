@@ -124,19 +124,20 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
             names.push_back(jsonValue(expr));
         }
     }
-    _tab++;
 
     nlohmann::json defines;
     nlohmann::json groups;
     nlohmann::json attributes;
 
     SynlibStatement *stmt;
+    // There are 3 categories of objects for a given library we care about: defines, groups and attributes
     FOREACH_ARRAY_ITEM(node.GetStatements(), i, stmt)
     {
         TraverseNode(stmt);
         if (_jstack.size())
         {
             nlohmann::json lookahead = _jstack.top();
+            // Defines use one of either keywords 
             if (lookahead.contains("define") || lookahead.contains("define_group"))
             {
                 nlohmann::json v = lookahead;
@@ -166,16 +167,15 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
                     }
                 }
             }
+            // Groups are one of the SynlibGroup subclass
+            else if (dynamic_cast<SynlibGroup *>(stmt))
+            {
+                groups["groups"].push_back(lookahead);
+            }
+            // Remainders are attributes
             else
             {
-                if (dynamic_cast<SynlibGroup *>(stmt))
-                {
-                    groups["groups"].push_back(lookahead);
-                }
-                else
-                {
-                    attributes["attributes"].push_back(lookahead);
-                }
+                attributes["attributes"].push_back(lookahead);
             }
             _jstack.pop();
         }

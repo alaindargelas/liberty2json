@@ -56,7 +56,7 @@ namespace Verific { // start definitions in verific namespace
 class VFC_DLL_PORT SynlibJsonVisitor : public SynlibVisitor
 {
 public:
-    explicit SynlibJsonVisitor(nlohmann::json& obj) : SynlibVisitor(), _json(obj), _tab(0) { }
+    explicit SynlibJsonVisitor(nlohmann::json& obj) : SynlibVisitor(), _json(obj) { }
     virtual ~SynlibJsonVisitor() { }
 
 private:
@@ -77,7 +77,6 @@ public:
 private:
     nlohmann::json &_json ;
     std::stack<nlohmann::json> _jstack;
-    unsigned        _tab ;
 } ; // class SynlibJsonVisitor
 
 /* -------------------------------------------------------------- */
