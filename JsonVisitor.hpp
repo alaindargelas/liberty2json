@@ -76,7 +76,7 @@ public:
 
 private:
     nlohmann::json &_json ;
-    std::stack<nlohmann::json> _jstack;
+    nlohmann::json _tmp;
 } ; // class SynlibJsonVisitor
 
 /* -------------------------------------------------------------- */

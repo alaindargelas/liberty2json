@@ -43,17 +43,11 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibAttr, node)
     if (node.GetValue())
         TraverseNode(node.GetValue());
     nlohmann::json simple_attr;
-    if (_jstack.size())
+    for (const auto &[keyo, valueo] : _tmp.items())
     {
-        nlohmann::json lookahead = _jstack.top();
-        nlohmann::json v = lookahead;
-        for (const auto &[keyo, valueo] : v.items())
-        {
-            simple_attr[node.GetName()] = valueo;
-        }
-        _jstack.pop();
+        simple_attr[node.GetName()] = valueo;
     }
-    _jstack.push(simple_attr);
+    _tmp = simple_attr;
 }
 
 void SynlibJsonVisitor::SYNLIB_VISIT(SynlibComplexAttr, node)
@@ -64,13 +58,9 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibComplexAttr, node)
     FOREACH_ARRAY_ITEM(node.GetValues(), i, expr)
     {
         TraverseNode(expr);
-        if (_jstack.size())
-        {
-            complex_attr[node.GetName()].push_back(_jstack.top());
-            _jstack.pop();
-        }
+        complex_attr[node.GetName()].push_back(_tmp);
     }
-    _jstack.push(complex_attr);
+    _tmp = complex_attr;
 }
 
 nlohmann::json jsonValue(SynlibExpr *expr)
@@ -133,51 +123,46 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
     FOREACH_ARRAY_ITEM(node.GetStatements(), i, stmt)
     {
         TraverseNode(stmt);
-        if (_jstack.size())
+
+        SYNLIB_CLASS_ID stmt_type = stmt->GetClassId();
+        // Defines use one of either keywords
+        if (_tmp.contains("define") || _tmp.contains("define_group"))
         {
-            nlohmann::json lookahead = _jstack.top();
-            SYNLIB_CLASS_ID stmt_type = stmt->GetClassId();
-            // Defines use one of either keywords 
-            if (lookahead.contains("define") || lookahead.contains("define_group"))
+            for (const auto &[keyo, valueo] : _tmp.items())
             {
-                nlohmann::json v = lookahead;
-                for (const auto &[keyo, valueo] : v.items())
+                if (valueo.size() == 2 || valueo.size() == 3)
                 {
-                    if (valueo.size() == 2 || valueo.size() == 3)
+                    nlohmann::json st;
+                    if (defines["defines"].contains(valueo.at(0)))
                     {
-                        nlohmann::json st;
-                        if (defines["defines"].contains(valueo.at(0)))
-                        {
-                            std::string prev = defines["defines"][valueo.at(0)]["allowed_group_name"];
-                            defines["defines"][valueo.at(0)]["allowed_group_name"] = prev + "|" + valType(valueo.at(1));
-                        }
-                        else
-                        {
-                            st["allowed_group_name"] = valueo.at(1);
-                            if (valueo.size() == 2)
-                                st["valtype"] = "undefined_valuetype";
-                            else 
-                                st["valtype"] = valType(valueo.at(2));
-                            defines["defines"][valueo.at(0)] = st;
-                        }
+                        std::string prev = defines["defines"][valueo.at(0)]["allowed_group_name"];
+                        defines["defines"][valueo.at(0)]["allowed_group_name"] = prev + "|" + valType(valueo.at(1));
                     }
                     else
                     {
-                        defines["defines"][keyo] = valueo;
+                        st["allowed_group_name"] = valueo.at(1);
+                        if (valueo.size() == 2)
+                            st["valtype"] = "undefined_valuetype";
+                        else
+                            st["valtype"] = valType(valueo.at(2));
+                        defines["defines"][valueo.at(0)] = st;
                     }
                 }
+                else
+                {
+                    defines["defines"][keyo] = valueo;
+                }
             }
-            // Groups are one of the SynlibGroup subclass
-            else if (stmt_type == ID_SYNLIBGROUP || stmt_type == ID_SYNLIBLIBRARY || stmt_type == ID_SYNLIBCELL || stmt_type == ID_SYNLIBPIN || stmt_type == ID_SYNLIBBUS || stmt_type == ID_SYNLIBBUNDLE || stmt_type == ID_SYNLIBFLIPFLOP || stmt_type == ID_SYNLIBLATCHBANK || stmt_type == ID_SYNLIBLATCH || stmt_type == ID_SYNLIBLATCHBANK || stmt_type == ID_SYNLIBLUT || stmt_type == ID_SYNLIBSTATETABLE || stmt_type == ID_SYNLIBTYPE || stmt_type == ID_SYNLIBTESTCELL || stmt_type == ID_SYNLIBOPERATINGCONDITIONS || stmt_type == ID_SYNLIBLEAKAGEPOWER)
-            {
-                groups["groups"].push_back(lookahead);
-            }
-            // Remainders are attributes
-            else
-            {
-                attributes["attributes"].push_back(lookahead);
-            }
-            _jstack.pop();
+        }
+        // Groups are one of the SynlibGroup subclass
+        else if (stmt_type == ID_SYNLIBGROUP || stmt_type == ID_SYNLIBLIBRARY || stmt_type == ID_SYNLIBCELL || stmt_type == ID_SYNLIBPIN || stmt_type == ID_SYNLIBBUS || stmt_type == ID_SYNLIBBUNDLE || stmt_type == ID_SYNLIBFLIPFLOP || stmt_type == ID_SYNLIBLATCHBANK || stmt_type == ID_SYNLIBLATCH || stmt_type == ID_SYNLIBLATCHBANK || stmt_type == ID_SYNLIBLUT || stmt_type == ID_SYNLIBSTATETABLE || stmt_type == ID_SYNLIBTYPE || stmt_type == ID_SYNLIBTESTCELL || stmt_type == ID_SYNLIBOPERATINGCONDITIONS || stmt_type == ID_SYNLIBLEAKAGEPOWER)
+        {
+            groups["groups"].push_back(_tmp);
+        }
+        // Remainders are attributes
+        else
+        {
+            attributes["attributes"].push_back(_tmp);
         }
     }
 
@@ -233,7 +218,7 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
         if (jnames.size())
             j[node.GetName()]["names"] = jnames["names"];
 
-        _jstack.push(j);
+        _tmp = j;
     }
 }
 
@@ -242,9 +227,7 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibExpr, node)
     char *image = node.Image();
     if (!image)
         return;
-    nlohmann::json simple_expr;
-    simple_expr = jsonValue(&node);
-    _jstack.push(simple_expr);
+    _tmp = jsonValue(&node);
     Strings::free(image);
 }
 
@@ -253,9 +236,7 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibReal, node)
     char *image = node.Image();
     if (!image)
         return;
-    nlohmann::json simple_expr;
-    simple_expr = node.Double();
-    _jstack.push(simple_expr);
+    _tmp = node.Double();
     Strings::free(image);
 }
 
@@ -264,9 +245,7 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibInt, node)
     char *image = node.Image();
     if (!image)
         return;
-    nlohmann::json simple_expr;
-    simple_expr = node.Int();
-    _jstack.push(simple_expr);
+    _tmp = node.Int();
     Strings::free(image);
 }
 
@@ -275,9 +254,7 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibString, node)
     char *image = node.Image();
     if (!image)
         return;
-    nlohmann::json simple_expr;
-    simple_expr = jsonValue(&node);
-    _jstack.push(simple_expr);
+    _tmp = jsonValue(&node);
     Strings::free(image);
 }
 
