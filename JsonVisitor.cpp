@@ -123,7 +123,7 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
         TraverseNode(stmt);
 
         SYNLIB_CLASS_ID stmt_type = stmt->GetClassId();
-        // Defines use one of either keywords
+        // Defines
         if (stmt_type == ID_SYNLIBDEFINE)
         {
             for (const auto &[keyo, valueo] : _tmp.items())
