@@ -125,7 +125,6 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
         SYNLIB_CLASS_ID stmt_type = stmt->GetClassId();
         // Defines use one of either keywords
         if (stmt_type == ID_SYNLIBDEFINE)
-        // if (_tmp.contains("define") || _tmp.contains("define_group"))
         {
             for (const auto &[keyo, valueo] : _tmp.items())
             {
