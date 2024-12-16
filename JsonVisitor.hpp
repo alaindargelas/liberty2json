@@ -63,7 +63,7 @@ private:
     // Prevent compiler from defining the following
     SynlibJsonVisitor(const SynlibJsonVisitor &) ;            // Purposely leave unimplemented
     SynlibJsonVisitor& operator=(const SynlibJsonVisitor &) ; // Purposely leave unimplemented
-
+    void collectDefines(nlohmann::json& defines);
 public:
     // Overrides
     virtual void SYNLIB_VISIT(SynlibAttr, node) ;
