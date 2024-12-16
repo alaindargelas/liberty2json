@@ -36,8 +36,6 @@ using namespace Verific;
 // SynlibJsonVisitor
 /* -------------------------------------------------------------- */
 
-static std::string TAB = "  ";
-
 void SynlibJsonVisitor::SYNLIB_VISIT(SynlibAttr, node)
 {
     if (node.GetValue())
@@ -87,7 +85,7 @@ nlohmann::json jsonValue(SynlibExpr *expr)
     return result;
 }
 
-std::string valType(std::string type)
+std::string valType(const std::string &type)
 {
     if (type == "integer")
     {
@@ -126,7 +124,8 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
 
         SYNLIB_CLASS_ID stmt_type = stmt->GetClassId();
         // Defines use one of either keywords
-        if (_tmp.contains("define") || _tmp.contains("define_group"))
+        if (stmt_type == ID_SYNLIBDEFINE)
+        // if (_tmp.contains("define") || _tmp.contains("define_group"))
         {
             for (const auto &[keyo, valueo] : _tmp.items())
             {
@@ -135,7 +134,7 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
                     nlohmann::json st;
                     if (defines["defines"].contains(valueo.at(0)))
                     {
-                        std::string prev = defines["defines"][valueo.at(0)]["allowed_group_name"];
+                        const std::string &prev = defines["defines"][valueo.at(0)]["allowed_group_name"];
                         defines["defines"][valueo.at(0)]["allowed_group_name"] = prev + "|" + valType(valueo.at(1));
                     }
                     else
@@ -171,7 +170,7 @@ void SynlibJsonVisitor::SYNLIB_VISIT(SynlibGroup, node)
     {
         jnames["names"].push_back(n);
     }
-    if (node.GetName() == std::string("library"))
+    if (!strcmp(node.GetName(), "library"))
     {
         if (groups.size())
         {
