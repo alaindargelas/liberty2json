@@ -2,13 +2,14 @@
 #include <string>
 #include "include/si2dr_liberty.h"
 #include "lib/json.hpp"
+#include "LibertyParser.hpp"
 using string = std::string;
 using json = nlohmann::json;
 
 // C++ wrapper for Synopsys Liberty parser
-class LibertyParser {
+class SynLibertyParser : public LibertyParser {
 	public:
-		LibertyParser(string filename, bool debug=false) {
+		SynLibertyParser(string filename, bool debug=false) {
 			set_debug_mode(debug);
 			si2drPIInit(&err); 
 			si2drReadLibertyFile(strdup(filename.c_str()), &err);
@@ -16,7 +17,7 @@ class LibertyParser {
 				throw std::invalid_argument(get_error_text());
 			}
 		}
-		~LibertyParser() { si2drPIQuit(&err); }
+		~SynLibertyParser() { si2drPIQuit(&err); }
 		bool get_debug_mode() {
 			return si2drPIGetTraceMode(&err);
 		}
@@ -47,9 +48,12 @@ class LibertyParser {
 			si2drIterQuit(groups, &err);
 			return result;
 		}
-		void to_json_file(string filename) {
+		void to_json_file(string filename, bool indent) {
 			std::ofstream file(filename);
-			file << as_json().dump();
+			if (indent)
+				file << as_json().dump(2);
+			else
+				file << as_json().dump();
 			file.close();
 		}
 	

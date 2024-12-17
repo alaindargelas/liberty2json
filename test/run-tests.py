@@ -35,8 +35,11 @@ def run_tests():
 			ref_file = lib_file.replace(".lib", ".ref.json")
 			
 			# Run liberty2json on the .lib file
-			subprocess.run([LIBERTY2JSON_EXE, lib_file, "--outfile", json_file])
-			
+			if "VERIFIC_PARSER" in os.environ:
+				subprocess.run([LIBERTY2JSON_EXE, lib_file, "--outfile", json_file, "--verific"])
+			else:
+				subprocess.run([LIBERTY2JSON_EXE, lib_file, "--outfile", json_file])
+
 			# Compare the output JSON file to the reference file
 			if "syntaxerr" in json_file or "example.include" in json_file:
 				continue

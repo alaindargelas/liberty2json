@@ -1,3 +1,6 @@
 [submodule "third_party/backward-cpp"]
 	path = third_party/backward-cpp
 	url = git@github.com:bombela/backward-cpp.git
+[submodule "third_party/verific"]
+	path = third_party/verific
+	url = git@github.com:Silimate/verific.git
