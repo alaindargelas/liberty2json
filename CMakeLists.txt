@@ -7,6 +7,15 @@ project(Liberty2JSON C CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# Detect OS
+if (UNIX)
+  if (APPLE)
+    set(OS mac)
+  else()
+    set(OS linux)
+  endif()
+endif()
+
 # Detect build type, fallback to release and throw a warning if use didn't
 # specify any
 if(NOT CMAKE_BUILD_TYPE)
@@ -56,18 +65,17 @@ set(FLEX_BISON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/liberty_parser.c ${CMAKE_
 # Build Verific
 ###############################################################################
 
-add_custom_target(BuildVerificLiberty DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/synlib-linux.a)
 add_custom_command(
-  OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/synlib-linux.a
+  OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/synlib-${OS}.a
   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/synlib_file.h
   COMMAND echo "       Build Verific Liberty parser library"
   COMMAND make CFLAGS="-DVERIFIC_ENABLE_ZLIB=1" VERSION=-O3
   COMMAND echo "       Verific Liberty parser library"
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/")
 
-add_custom_target(BuildVerificDatabase DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/database/database-linux.a)
+add_custom_target(BuildVerificDatabase DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/database/database-${OS}.a)
 add_custom_command(
-    OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/database/database-linux.a
+    OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/database/database-${OS}.a
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/database/DataBase.h
     COMMAND echo "       Build Verific database library"
     COMMAND make CFLAGS="-DVERIFIC_ENABLE_ZLIB=1" VERSION=-O3
@@ -75,9 +83,9 @@ add_custom_command(
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/database/")
 
 
-add_custom_target(BuildVerificContainers DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/containers-linux.a)
+add_custom_target(BuildVerificContainers DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/containers-${OS}.a)
 add_custom_command(
-    OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/containers-linux.a
+    OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/containers-${OS}.a
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/Array.h
     COMMAND echo "       Build Verific containers library"
     COMMAND make CFLAGS="-DVERIFIC_ENABLE_ZLIB=1" VERSION=-O3
@@ -85,9 +93,9 @@ add_custom_command(
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/")
 
 
-add_custom_target(BuildVerificUtil DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/util/util-linux.a)
+add_custom_target(BuildVerificUtil DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/util/util-${OS}.a)
 add_custom_command(
-      OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/util/util-linux.a
+      OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/util/util-${OS}.a
       DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/util/VerificSystem.h
       COMMAND echo "       Build Verific util library"
       COMMAND make CFLAGS="-DVERIFIC_ENABLE_ZLIB=1" VERSION=-O3
@@ -117,19 +125,19 @@ target_include_directories(liberty2json PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inclu
 target_link_libraries(liberty2json PUBLIC Backward::Interface)
 
 add_library(synlib STATIC IMPORTED)
-set_target_properties(synlib PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/synlib-linux.a)
+set_target_properties(synlib PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/synlib-${OS}.a)
 add_dependencies(synlib BuildVerificLiberty)
 
 add_library(containers STATIC IMPORTED)
-set_target_properties(containers PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/containers-linux.a)
+set_target_properties(containers PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/containers/containers-${OS}.a)
 add_dependencies(containers BuildVerificContainers)
 
 add_library(database STATIC IMPORTED)
-set_target_properties(database PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/database/database-linux.a)
+set_target_properties(database PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/database/database-${OS}.a)
 add_dependencies(database BuildVerificDatabase)
 
 add_library(util STATIC IMPORTED)
-set_target_properties(util PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/util/util-linux.a)
+set_target_properties(util PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/util/util-${OS}.a)
 add_dependencies(util BuildVerificUtil)
 
 # !!! The order of the libraries is very specific to avoid undefined symbols !!!
