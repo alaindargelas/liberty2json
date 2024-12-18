@@ -65,6 +65,7 @@ set(FLEX_BISON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/liberty_parser.c ${CMAKE_
 # Build Verific
 ###############################################################################
 
+add_custom_target(BuildVerificDatabase DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/synlib-${OS}.a)
 add_custom_command(
   OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/synlib-${OS}.a
   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/verific/synlib/synlib_file.h
