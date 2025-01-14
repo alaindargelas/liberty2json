@@ -112,6 +112,7 @@ if (UNIX AND NOT APPLE)
   set (STACK_DETAILS_DW TRUE CACHE BOOL "Use libdw to read debug info")
 endif()
 add_subdirectory(third_party/backward-cpp)
+target_include_directories(backward_interface INTERFACE /usr/include/libdwarf/)
 
 ###############################################################################
 # Executable target for Liberty2JSON
