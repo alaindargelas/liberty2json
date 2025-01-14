@@ -44,6 +44,7 @@ set(FLEX_BISON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/liberty_parser.c ${CMAKE_
 set (STACK_DETAILS_AUTO_DETECT FALSE CACHE BOOL "Auto detect backward's stack details dependencies")
 set (STACK_DETAILS_DW TRUE CACHE BOOL "Use libdw to read debug info")
 add_subdirectory(third_party/backward-cpp)
+target_include_directories(backward_interface INTERFACE /usr/include/libdwarf/)
 
 ###############################################################################
 # Executable target for Liberty2JSON
