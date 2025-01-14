@@ -99,6 +99,7 @@ add_custom_command(
 ###############################################################################
 
 add_subdirectory(third_party/backward-cpp)
+target_include_directories(backward_interface INTERFACE /usr/include/libdwarf/)
 
 ###############################################################################
 # Executable target for Liberty2JSON
